@@ -6,26 +6,51 @@ phases:
       php: 8.2
   pre_build: # commands to be run before build
     commands:
-    - echo Installing Docker...
-    - apt-get install -q -y docker.io
-    - docker --version
-    - aws --version
-    # login to Elastic container registry
-    - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "645095421007.dkr.ecr.us-east-1.amazonaws.com"
-    - REPOSITORY_URI=645095421007.dkr.ecr.us-east-1.amazonaws.com/laravel-application
-    - IMAGE_TAG="$CI_COMMIT_SHA"
+      - echo Installing Docker...
+      - |
+        # Install Docker (for Linux-based environments)
+        if [[ "$CODEBUILD_RESOLVED_SOURCE_VERSION" == "docker"* ]]; then
+          echo "Docker is already installed."
+        else
+          # Update package manager repositories (replace 'apt-get' with your package manager)
+          sudo apt-get update -y
+          
+          # Install Docker dependencies
+          sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            software-properties-common
+            
+          # Add Docker GPG key and repository
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+          
+          # Install Docker
+          sudo apt-get update -y
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+          
+          # Verify Docker installation
+          sudo docker --version
+        fi
+      - docker --version
+      - aws --version
+      # login to Elastic container registry
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "645095421007.dkr.ecr.us-east-1.amazonaws.com"
+      - REPOSITORY_URI=645095421007.dkr.ecr.us-east-1.amazonaws.com/laravel-application
+      - IMAGE_TAG="$CI_COMMIT_SHA"
   build:
     commands:
-    - echo Build started on `date`
-    - echo installing composer..
-    - composer install
-    - echo creating .env file..
-    - cp .env.example .env
-    - echo generating app key
-    - php artisan key:generate
-    - echo Building the Docker image...
-    - docker build -t $REPOSITORY_URI:latest .
-    - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - echo Build started on `date`
+      - echo installing composer..
+      - composer install
+      - echo creating .env file..
+      - cp .env.example .env
+      - echo generating app key
+      - php artisan key:generate
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
