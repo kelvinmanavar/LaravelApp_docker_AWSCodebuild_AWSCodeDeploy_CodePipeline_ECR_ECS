@@ -7,32 +7,6 @@ phases:
   pre_build: # commands to be run before build
     commands:
       - echo Installing Docker...
-      - |
-        # Install Docker (for Linux-based environments)
-        if [[ "$CODEBUILD_RESOLVED_SOURCE_VERSION" == "docker"* ]]; then
-          echo "Docker is already installed."
-        else
-          # Update package manager repositories (replace 'apt-get' with your package manager)
-          sudo apt-get update -y
-          
-          # Install Docker dependencies
-          sudo apt-get install -y \
-            apt-transport-https \
-            ca-certificates \
-            curl \
-            software-properties-common
-            
-          # Add Docker GPG key and repository
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-          
-          # Install Docker
-          sudo apt-get update -y
-          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-          
-          # Verify Docker installation
-          sudo docker --version
-        fi
       - docker --version
       - aws --version
       # login to Elastic container registry
