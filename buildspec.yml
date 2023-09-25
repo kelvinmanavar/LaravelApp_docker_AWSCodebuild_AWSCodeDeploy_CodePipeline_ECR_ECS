@@ -6,7 +6,9 @@ phases:
       php: 8.2
   pre_build: # commands to be run before build
     commands:
-    - echo Logging in to Amazon ECR....
+    - echo Installing Docker...
+    - apt-get install -q -y docker.io
+    - docker --version
     - aws --version
     # login to Elastic container registry
     - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "645095421007.dkr.ecr.us-east-1.amazonaws.com"
