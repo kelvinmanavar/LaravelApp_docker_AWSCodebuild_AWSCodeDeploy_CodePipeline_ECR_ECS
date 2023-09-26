@@ -4,6 +4,9 @@ phases:
   install:
     runtime-versions:
       php: 8.2
+    commands:
+      - apt-get update
+      - apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev zip unzip git
   pre_build: # commands to be run before build
     commands:
       - docker --version
@@ -11,7 +14,7 @@ phases:
       # login to Elastic container registry
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "645095421007.dkr.ecr.us-east-1.amazonaws.com"
       - REPOSITORY_URI=645095421007.dkr.ecr.us-east-1.amazonaws.com/laravel-application
-      - IMAGE_TAG="$CI_COMMIT_SHA"
+      - IMAGE_TAG=1.0
   build:
     commands:
       - echo Build started on `date`
