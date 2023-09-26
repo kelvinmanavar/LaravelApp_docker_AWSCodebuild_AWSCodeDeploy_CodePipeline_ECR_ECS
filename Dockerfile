@@ -1,5 +1,5 @@
 # Use an official PHP image as the base image
-FROM php:8.0-apache
+FROM php:8.2-apache
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
@@ -32,9 +32,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . /var/www/html/
 
 # Install application dependencies using Composer
-RUN composer self-update
-RUN composer clear-cache
-RUN composer install
+RUN composer install \
+    --ignore-platform-reqs \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --prefer-dist
 
 # Set permission
 RUN chmod -R o+w /var/www/html/storage
