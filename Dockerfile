@@ -1,5 +1,5 @@
 # Use an official PHP image as the base image
-FROM php:7.3-apache
+FROM php:8.2-apache
 
 # Set the working directory inside the container
 WORKDIR /var/www/html
