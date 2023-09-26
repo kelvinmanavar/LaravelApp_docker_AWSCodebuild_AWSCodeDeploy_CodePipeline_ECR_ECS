@@ -32,6 +32,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . /var/www/html/
 
 # Install application dependencies using Composer
+RUN composer self-update
+RUN composer clear-cache
 RUN composer install
 
 # Set permission
